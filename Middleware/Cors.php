@@ -17,9 +17,13 @@ class Cors
      */
     public function handle($request, Closure $next)
     {
-        return $next($request)
-            ->header('Access-Control-Allow-Origin', '*') //Acceso al control del API
-            ->header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS') //Metodos permitidos 
-            ->header('Access-Control-Allow-Headers', 'X-Requested-With, X-Api-AppKey'); //Cabeceras permitidas
+         if ($request->ajax() || $request->method() === 'OPTIONS') {
+            return $next($request)
+                ->header('Access-Control-Allow-Origin', '*')
+                ->header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
+                ->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, X-Access-Header');
+        } else {
+            return abort(404);
+        }
     }
-}
+}	

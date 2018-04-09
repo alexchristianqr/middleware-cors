@@ -18,11 +18,15 @@ class VerifyAccessHeaders
     public function handle($request, Closure $next)
     {
         $response = null;
-        if ($request->hasHeader("X-Api-AppKey")) {
-            if ($request->header("X-Api-AppKey") == config()["app"]["app_key"]) $response = $next($request);
+        if ($request->ajax()) {
+            if ($request->hasHeader("X-Access-Header")) {
+                if ($request->header("X-Access-Header") == config()["app"]["app_key"]) $response = $next($request);
+            } else {
+                $response = response()->json("User Unhautorized", 401);
+            }
+            return $response;
         } else {
-            $response = response()->json("User Unhautorized", 401);
+            return abort(404);
         }
-        return $response;
     }
 }
